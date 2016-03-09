@@ -1,0 +1,69 @@
+﻿@model IEnumerable<WebApplication3.Models.Subjects>
+@{
+    ViewBag.Title = "All Buds";
+}
+
+@foreach (var item in Model)
+{
+    <div class="post">
+        <div class="postheader">
+            @Html.Hidden("hiddensearch", (string) ViewBag.Search)
+            <h3 style="color: #585858;">@Html.Raw(item.Title)</h3>
+            @{var dateOut1 = String.Format("{0:dddd, MMMM d, yyyy}", item.postDate);}
+            @*<span style="float: left; font-size: 13px;">@Html.DisplayFor(modelItem => dateOut1) </span>*@
+            <div class="buttons">
+                <div class="upNote"></div>
+                <a title="Edit this Post" class="edit" href="@Url.Action("Edit", "Subjects", new {id = item.ID})"><img src="~/Images/write48.png"/></a>
+                @*<a title="Details about this post"href="@Url.Action("Details", "Subjects", new { id = item.ID })"><img src="~/Images/info31.png" /></a>*@
+                <a title="Delete this post" href="@Url.Action("Delete", "Subjects", new {id = item.ID})"><img src="~/Images/cross92.png"/></a>
+                <a title="View post notes" href="@Url.Action("Index", "Notes", new {id = item.ID})"><img src="~/Images/rectangular4.png"/></a>
+                <a title="Add a note" href="@Url.Action("Create", "Notes", new {id = item.ID})"><img src="~/Images/clip25.png"/></a>
+            </div>
+        </div>
+        <div class="postbody">
+            @if (item.subjectNotes.Count != 0)
+            {
+                foreach (var note in item.subjectNotes)
+                {
+                    <div class="note">
+                        <div class="noteheader">
+                            
+                            <h3 style="padding-bottom: 5px">@Html.Raw(note.Title)</h3>
+                            @{var dateOut = String.Format("{0:dddd, MMMM d}", note.datePosted);}
+                            <span style="font-size: 14px;">
+                        @Html.DisplayFor(modelItem => dateOut)
+                            <div class="noteHide"></div>
+                        </span>
+                    
+                        </div>
+                      
+                    <div style="margin-bottom:10px;" class="note">
+                        @Html.Raw(note.Body)
+                        
+                    </div>
+                      
+                        </div>
+                                }
+                            }
+                            else
+                            {
+                                    <span class="noteheader">No Notes</span>
+                            }
+        </div>
+                </div>
+                            }
+
+@section Scripts {
+<script>
+    $(document).ready(function () { $('.searchString').addClass("highlight") })
+    $('#toggle').click(function () {
+        if($('.searchString').hasClass("highlight"))
+            $('.searchString').removeClass("highlight")
+        else
+            $('.searchString').addClass("highlight")
+
+
+    })
+</script>
+
+}

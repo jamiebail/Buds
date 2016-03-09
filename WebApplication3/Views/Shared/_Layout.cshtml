@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Buds</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="head">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="search">
+
+                @using (Html.BeginForm())
+            {
+                if (ViewBag.searched == true)
+                {
+                        <input type="checkbox" name="toggle" id="toggle" checked>
+                        <label title="Toggle highlights" for="toggle"></label>
+                    }
+
+                    <input type="text" name="search" value="@ViewBag.Search" />
+                    <input type="submit" value="Search" />
+                }
+            </div>
+
+
+            <a title="Add a post" class="add" href="@Url.Action("Create", "Subjects")"><img style="height:20px;width:auto" src="~/Images/add186.png" /></a>
+            <div title="Collapse Posts" style="position:fixed" class="collapseAll"><img src="~/Images/caret7.png" /></div>
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="logo" href="@Url.Action("Index", "Subjects")"><img class="logo" src="~/Images/seeds.png" /></a>
+
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav" id="test"></ul>
+                    @*@Html.Partial("_LoginPartial")*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <footer>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script>
+        //Used for post collapsing
+        $(document).ready(function () {
+            $('.postheader').click(function () {
+
+                
+                if ($(this).hasClass("clicked")) {
+                    var el = $(this).siblings();
+                    var currentHeight = $(this).siblings().height()
+                    $(this).siblings().animate({ height: '55px' }, 500);
+
+                    setTimeout(function () {
+                        el.children().children().slideDown().removeClass("clickednote");
+                    }, 501)
+                    $(this).removeClass("clicked")
+
+                    }
+                else {
+
+                    var el = $(this).siblings();
+                                       curHeight = el.siblings().height();
+                    autoHeight = el.css('height', 'auto').height();
+                    
+                    el.height(curHeight).animate({ height: autoHeight }, 500);
+
+                    $(this).addClass("clicked")
+                    
+                }
+            });
+
+            $('.noteheader').click(function () {
+
+                if (!$(this).hasClass("clickednote")) {
+                    var el = $(this).closest('.postbody');
+                    curHeight = el.height();
+                    noteHeight = parseInt($(this).siblings('#note').css('height')) + 35;
+                    newHeight = curHeight - noteHeight;
+                    el.css({"height": newHeight})
+                    $(this).siblings().slideUp();
+                    $(this).addClass("clickednote")
+                    el.height(curHeight).animate({ height: newHeight }, 500);
+                }
+                else {
+
+                    var el = $(this).siblings();
+                    el.slideDown("fast");
+                    $(this).removeClass("clickednote")
+                    var el = $(this).closest('.postbody');
+                    curHeight = el.height();
+                    noteHeight = parseInt($(this).siblings('#note').css('height')) + 35;
+                    newHeight = curHeight + noteHeight;
+                    el.css({ "height": newHeight })
+                    $(this).addClass("clickednote")
+                    el.height(curHeight).animate({ height: newHeight }, 500);
+                }
+            });
+
+            $('.collapseAll').click(function () {   
+                $('.postbody').animate({height:'55px'}, 500)
+                $('.postheader').removeClass("clicked")
+            });
+
+            $(".postheader a").click(function (e) {
+                e.stopPropagation();
+            });
+        });
+        //Script to open notebody links in a new window to keep previous page constant.
+        $('a').each(function () {
+            var a = new RegExp('/' + window.location.host + '/');
+            if (!a.test(this.href)) {
+                $(this).click(function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    window.open(this.href, '_blank');
+                });
+            }
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Buds</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+<div class="head">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="search">
+
+            @using (Html.BeginForm())
+            {
+                if (ViewBag.searched == true)
+                {
+                    <input type="checkbox" name="toggle" id="toggle" checked>
+                    <label title="Toggle highlights" for="toggle"></label>
+                }
+
+                <input type="text" id="search" name="search" value="@ViewBag.Search"/>
+                <div style="position: fixed;" class ="deleteSearch">x</div>
+                <input type="submit" value="Search"/>
+            }
+        </div>
+
+        <a title="Add a post" class="add" href="@Url.Action("Create", "Subjects")"><img style="height: 20px; margin-left: 10px; width: auto" src="~/Images/add186.png"/></a>
+        <div title="Collapse Posts" style="position: fixed" class="collapseAll"><img src="~/Images/caret7.png"/>
+        </div>
+        <div class="container">
+            <div class="navbar-header">
+                <a  href="@Url.Action("Index", "Subjects")"><img class="logo" src="~/Images/seeds.png"/></a>
+
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav" id="test"></ul>
+                <div class=" quickmenuButton"></div>
+                <div class="quickmenu"  style="display: none;">
+                    
+                    <ul>
+                        <li class="googleSearch"></li>
+                        <li><hr/></li>
+                        <li class="stackSearch"></li>
+                        <li class ="wikiSearch"></li>
+                        <li><a></a></li>
+                    </ul>
+                </div>
+                @*@Html.Partial("_LoginPartial")*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container body-content">
+    
+
+    @RenderBody()
+    <footer>
+    </footer>
+</div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script>
+        //Used for post collapsing
+        $(document).ready(function () {
+
+            $('.upNote').click(function() {
+                
+            });
+
+           
+            if ($('#search').val().length !== 0) {
+                $('.quickmenuButton').fadeIn(100);
+                $('.deleteSearch').fadeIn(100);
+            } else {
+                $('.quickmenuButton').fadeOut(100);
+                $('.quickmenu').fadeOut(100);
+            }
+            $('#search').keyup(function() {
+                if ($('#search').val().length !== 0) {
+                    $('.quickmenuButton').fadeIn(100);
+                    $('.deleteSearch').fadeIn(100);
+                } else {
+                    $('.quickmenuButton').fadeOut(100);
+                    $('.quickmenu').fadeOut(100);
+                    $('.deleteSearch').fadeOut(100);
+                }
+            });
+
+            $('.deleteSearch').click(function() {
+                $('#search').val("").focus();
+                $(this).fadeOut();
+                $('.quickmenuButton').fadeOut(100);
+                $('.quickmenu').fadeOut(100);
+            });
+
+            $('.googleSearch').click(function() {
+                window.open("http://google.co.uk/#q=" + $('#search').val());
+            });
+
+            $('.stackSearch').click(function() {
+                window.open("http://stackoverflow.com/search?q=" + $('#search').val());
+            });
+
+            $('.wikiSearch').click(function () {
+                window.open("https://en.wikipedia.org/wiki/" + $('#search').val());
+            });
+
+            $('.quickmenuButton').click(function () {
+                if(!$('.quickmenu').hasClass("visible"))
+                    $('.quickmenu').fadeIn(100).addClass("visible");
+                else {
+                    $('.quickmenu').fadeOut(100).removeClass("visible");
+                }
+            });
+
+            $('.postheader').click(function () {
+
+                //Closed subject
+                var el;
+                if ($(this).hasClass("clicked")) {
+                    el = $(this).siblings();
+                    var currentHeight = $(this).siblings().height();
+                    $(this).siblings().animate({ height: '52px' }, 500);
+                    el.find(".noteheader").removeClass("clickednote");;
+                    $(this).removeClass("clicked");
+                    $(this).children('.upNote').fadeOut(200);
+
+                }
+                else {
+                    $(this).children('.upNote').fadeIn(200);
+                    el = $(this).siblings();
+                    el.find(".note").show();
+                    autoHeight = el.css('height', 'auto').height();
+                    el.height(55).animate({ height: autoHeight }, 500);
+
+                    $(this).addClass("clicked")
+                    
+                }
+            });
+
+            $('.noteheader').click(function () {
+                var postheader = $(this).parents().siblings('.postheader')
+                if (postheader.hasClass('clicked')) {
+
+                    var el;
+                    //Collapses note when note header is clicked. - When note is visible
+                    if (!$(this).hasClass("clickednote")) {
+                        el = $(this).closest('.postbody');
+
+                        curHeight = el.height();
+                        noteHeight = parseInt($(this).siblings('.note').height() +1);
+                        newHeight = curHeight - noteHeight;
+                        var note = $(this).parent();
+                        el.css({ "height": newHeight });
+                        $(this).siblings(".note").slideUp(100);
+                        if (note.siblings().size() <= 0) {
+                            $(this).removeClass("clickednote");
+                            postheader.removeClass("clicked");
+                            el.height(curHeight).animate({ height: newHeight },300);
+                        }
+                        else {
+                            $(this).addClass("clickednote");
+                            el.height(curHeight).animate({ height: newHeight },0);
+                        }
+
+                    }
+                    else {
+                        //Shows note when note header is clicked.
+                        $(this).removeClass("clickednote");
+                        $(this).siblings('.note').slideDown(100, function () {
+                            el = $(this).siblings('.note');
+                            var body = $(this).closest('.postbody');
+                            curHeight = body.height();
+                            noteHeight = $(this).height() + 9;
+                            newHeight = curHeight + noteHeight;
+                            body.css({ "height": newHeight });
+                            body.height(curHeight).animate({ height: newHeight },0);
+                        });
+
+                        
+                            
+                      
+                    }
+                }
+            });
+
+            $('.collapseAll').click(function () {
+                $('.postbody').animate({ height: '50px' }, 300);
+                $('.postheader').removeClass("clicked");
+                $('.upNote').fadeOut();
+                window.scrollTo(0, 0);
+            });
+
+            $(".upNote").click(function (e) {
+                e.stopPropagation();
+                var postbody = $(this).parents().find('.postbody');
+                postbody.children().find('.noteheader').removeClass("clickednote").click();
+                $(this).fadeOut(300);
+            });
+
+
+
+        });
+        //Script to open notebody links in a new window to keep previous page constant.
+        $('a').each(function () {
+            var a = new RegExp('/' + window.location.host + '/');
+            if (!a.test(this.href)) {
+                $(this).click(function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    window.open(this.href, '_blank');
+                });
+            }
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,58 @@
+﻿@model WebApplication3.Models.notes
+
+@{
+    ViewBag.Title = "Create";
+
+    var subs = ViewBag.Subjects;
+}
+
+
+
+@if (ViewBag.subject != null)
+{
+    <h3 class="subjectNotes">Add note to @ViewBag.subject</h3>
+}
+
+@ViewBag.error
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal" style="color: lightgrey; background-color: #fcfcfc">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="hidden form-group">
+            <div class="col-md-12">
+                @Html.HiddenFor(model => model.SubjectID, new { @Value = ViewBag.ID})
+            </div>
+        </div>
+        <div style="height: 0px;" class="hidden, titleInput, form-group">
+            <div class="col-md-12" style="top:-20%; height: 10px; position: relative;">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "titleInput form-control", placeholder="Title", onfocus = "this.placeholder = ''", onblur = "this.placeholder = 'Title'" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+               <div class="form-group">
+            <div class="col-md-12">
+                @Html.TextAreaFor(model => model.Body, htmlAttributes: new { @class = "ckeditor", name = "editor1" } )
+                @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
+            </div>
+        </div>
+   
+
+        <div class="form-group">
+            <div class="col-md-12">
+                <input type="submit" value="Create" class="create btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/ckeditor/ckeditor.js")
+<script>
+    CKEDITOR.replace('ckeditor');
+   
+
+</script>
+}
